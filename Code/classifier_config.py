@@ -8,7 +8,7 @@ modelType = 5 #this one is fairly fast and robust so we will choose this
 
 #3 set the folder where the training images are located organized in subfolders
 #each subfolder name is the name of the corresponding class
-imageFolder = 'data/classes_AB'
+imageFolder = 'classes_AB'
 #########################################################End of configuration
 
 classifierModels = ["resnet", "alexnet", "vgg", "squeezenet", "densenet", "vit_b_32"]
