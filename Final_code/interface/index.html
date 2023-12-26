@@ -81,16 +81,16 @@
 			if(jsondata){
 				waterform = jsondata.class;
 				if(waterform == "00_wave"){
-					wave_prob = wave_prob+5;
+					wave_prob = wave_prob+15;
 				}
 				else if(waterform == "01_waterfall"){
-					waterfall_prob= waterfall_prob+5 ;
+					waterfall_prob= waterfall_prob+15 ;
 				}
 				else if(waterform == "02_rainfall"){
-					rainfall_prob= rainfall_prob+5;
+					rainfall_prob= rainfall_prob+15;
 				}
 				else if(waterform == "03_ripple"){
-					ripple_prob= ripple_prob+5;
+					ripple_prob= ripple_prob+15;
 				}
 				prob = wave_prob + waterfall_prob + rainfall_prob + ripple_prob;
 			}
