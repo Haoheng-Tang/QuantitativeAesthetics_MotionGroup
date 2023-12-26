@@ -47,7 +47,7 @@ serve_data = ServerData()
 
 async def handler(websocket):
     async for message in websocket:
-        print(message)
+        #print(message)
         data = serve_data.ready_to_send
         data_json = json.dumps(data)
 
@@ -136,16 +136,14 @@ def classify(image):
             
             max_index = np.argmax(output)
             serve_data.to_send["class"] = classNames[max_index]
-            # if output[2].item()> 1.0e-07:
-            #     print(classNames[2])
-            # else:
-            #     print(classNames[max_index])
-            print(classNames[max_index])
-            # s = ""
-            # for i in range(len(classNames)):
-            #     s+= f'  {classNames[i]} : {round(output[i].item())}'
-            #     s+= f'  {classNames[i]} : {output[i].item()}'
-            # print(s)
+
+            #print(classNames[max_index])
+            s = ""
+            for i in range(len(classNames)):
+                s+= f'  {classNames[i]} : {output[i].item()}'
+                serve_data.to_send[classNames[i]] = output[i].item()
+            print(s)
+
 
 
 
