@@ -9,11 +9,6 @@
 	<body>
 
 		<button id="startbtn" style="margin-left: 30%;">start</button>
-		<button id="wavebtn" style="margin-left: 15%;">wave</button>
-		<button id="waterfallbtn" style="margin-left: 5%;">waterfall</button>
-		<button id="rainfallbtn" style="margin-left: 5%;">rainfall</button>
-		<button id="ripplebtn" style="margin-left: 5%;">ripple</button>
-
 
 		<script type="x-shader/x-vertex" id="vertexshader">
 
@@ -23,7 +18,7 @@
 
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 
-				gl_PointSize = scale * ( 300.0 / - mvPosition.z );
+				gl_PointSize = scale * ( 600.0 / - mvPosition.z );
 
 				gl_Position = projectionMatrix * mvPosition;
 
@@ -71,28 +66,40 @@
 			let wave_prob = 1;
 			let waterfall_prob = 1;
 			let rainfall_prob = 1;
-			let ripple_prob = 1;
+			let ripple_prob = 40;
 			let prob = 4;
+			let amp = 1;
 
 			// Listen for messages
 			socket.addEventListener("message", (event) => {
 			console.log("Message from server ", event.data);
 			jsondata = JSON.parse(event.data);
+			if(wave_prob > 35000 || waterfall_prob > 35000 || rainfall_prob > 35000 || ripple_prob > 70000){
+				wave_prob= wave_prob/100;
+				waterfall_prob= waterfall_prob/100;
+				rainfall_prob= rainfall_prob/100;
+				ripple_prob= ripple_prob/100;
+			}
+
 			if(jsondata){
+				//class
 				waterform = jsondata.class;
 				if(waterform == "00_wave"){
-					wave_prob = wave_prob+15;
+					wave_prob = wave_prob+ 35;
 				}
 				else if(waterform == "01_waterfall"){
-					waterfall_prob= waterfall_prob+15 ;
+					waterfall_prob= waterfall_prob+ 35;
 				}
 				else if(waterform == "02_rainfall"){
-					rainfall_prob= rainfall_prob+15;
+					rainfall_prob= rainfall_prob+ 35;
 				}
 				else if(waterform == "03_ripple"){
-					ripple_prob= ripple_prob+15;
+					ripple_prob= ripple_prob+ 70;
 				}
 				prob = wave_prob + waterfall_prob + rainfall_prob + ripple_prob;
+
+				//amp
+				amp = jsondata.intensity
 			}
 			
 			});
@@ -101,35 +108,6 @@
 			socket.send("start")
 			console.log("start")
 			}
-
-			document.getElementById('wavebtn').onclick = function(){
-			wave_prob = 1;
-			waterfall_prob = 0;
-			rainfall_prob = 0;
-			ripple_prob = 0;
-			}
-
-			document.getElementById('waterfallbtn').onclick = function(){
-			wave_prob = 0;
-			waterfall_prob = 1;
-			rainfall_prob = 0;
-			ripple_prob = 0;
-			}
-			
-			document.getElementById('rainfallbtn').onclick = function(){
-			wave_prob = 0;
-			waterfall_prob = 0;
-			rainfall_prob = 1;
-			ripple_prob = 0;
-			}
-
-			document.getElementById('ripplebtn').onclick = function(){
-			wave_prob = 0;
-			waterfall_prob = 0;
-			rainfall_prob = 0;
-			ripple_prob = 1;
-			}
-
 
 			/*
 			-------------------Animation-------------------
@@ -281,26 +259,6 @@
 
 					for ( let iy = 0; iy < AMOUNTY; iy ++ ) {
 
-						// if(waterform == "00_wave"){
-						// 	positions[ i + 1 ] = ( Math.sin( ( ix + count ) * 0.3 ) * 50 ) +( Math.sin( ( iy + count ) * 0.3 ) * 50 );
-						// 	//scales[ j ] = ( Math.sin( ( ix + count ) * 0.3 ) + 1 ) * 20 +( Math.sin( ( iy + count ) * 0.5 ) + 1 ) * 20;										
-						// 	scales[j] = 20- 0.13*positions[i+1];
-						// }
-						// else if(waterform == "01_waterfall"){
-						// 	positions[ i + 1 ] = ( 5.8*Math.sin(  Math.sqrt((iy - AMOUNTY/2)**2 ) + count ) * 100 *Math.exp(-Math.sqrt((ix - AMOUNTX/2)**2 + 4.3*(iy - AMOUNTY/2)**2)*0.09)+ 0.9*Math.cos(  Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2) + count ) * 100 *Math.exp(-Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2)*0.09));
-						// 	scales[j] = 20- 0.13*positions[i+1];
-						// }
-						// else if(waterform == "02_rainfall"){
-						// 	let ptx = AMOUNTX*Math.random();
-						// 	let pty = AMOUNTY*Math.random();
-						// 	positions[ i + 1 ] = 1.9*Math.sin(  Math.sqrt(((ix - ptx)**2 + (iy - pty)**2)) + count ) * 120 *Math.exp(-Math.sqrt((ix - ptx)**2 + (iy - pty)**2)*0.3);
-						// 	scales[j] = 20- 0.6*positions[i+1];
-						// }
-						// else if(waterform == "03_ripple"){
-						// 	positions[ i + 1 ] = 1.35*Math.sin(  Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2) + count ) * 100 *Math.exp(-Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2)*0.09);
-						// 	scales[j] = 20- 0.13*positions[i+1];
-						// }
-
 						let wave_position = ( Math.sin( ( ix + count ) * 0.3 ) * 100 ) +( Math.sin( ( iy + count ) * 0.3 ) * 100 );
 						let waterfall_position = ( 3.8*Math.sin(  Math.sqrt((iy - AMOUNTY/2)**2 ) + count ) * 100 *Math.exp(-Math.sqrt((ix - AMOUNTX/2)**2 + 2.3*(iy - AMOUNTY/2)**2)*0.09)+ 0.9*Math.cos(  Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2) + count ) * 100 *Math.exp(-Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2)*0.09));
 						let ptx = AMOUNTX*Math.random();
@@ -309,6 +267,7 @@
 						let ripple_position = 1.35*Math.sin(  Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2) + count ) * 100 *Math.exp(-Math.sqrt((ix - AMOUNTX/2)**2 + (iy - AMOUNTY/2)**2)*0.09);
 
 						positions[ i + 1 ] = wave_position * wave_prob/ prob+ waterfall_position * waterfall_prob/ prob + rainfall_position * rainfall_prob/ prob + ripple_position * ripple_prob/ prob;
+						//positions[ i + 1 ] = amp* positions[ i + 1 ]
 						scales[j] = 20- 0.13*positions[i+1];
 						i += 3;
 						j ++;

@@ -8,7 +8,7 @@ import os
 #import sys
 #sys.path.append("D:/OneDrive - Harvard University/Quantatitive Aesthetics/final_project")
 
-#websocket server
+#-----websocket server------
 import asyncio
 import websockets
 import threading
@@ -51,7 +51,6 @@ async def handler(websocket):
         data = serve_data.ready_to_send
         data_json = json.dumps(data)
 
-
         reply = f"Data received as {message}!"
         await websocket.send(data_json)
 
@@ -63,14 +62,11 @@ def run_server():
     asyncio.get_event_loop().run_forever()
 
    
-    
 
 
 #start the server in a separate thread
 server_thread = threading.Thread(target=run_server)
 server_thread.start()
-
-
 
 
 
@@ -153,7 +149,6 @@ def classify(image):
 #----------------------------------------------------
 
 #open the camera
-#cap = cv2.VideoCapture(0)
 cap = cv2.VideoCapture(0)
 
 flow_width = 320
@@ -175,7 +170,7 @@ while True:
     #convert the current frame to grayscale
     current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     #flip the current frame horizontally
-    #current_frame = cv2.flip(current_frame, 1) 
+    current_frame = cv2.flip(current_frame, 1) 
     #resize to something smaller
     current_frame = cv2.resize(current_frame, (flow_width, flow_height), interpolation = cv2.INTER_AREA)
 
@@ -209,6 +204,7 @@ while True:
 
 
             serve_data.to_send["flow_vec"] = [average_dx, average_dy]
+            serve_data.to_send["intensity"] = 1
             cv2.namedWindow('preview', cv2.WINDOW_NORMAL)
             cv2.imshow('preview',frame)
 
@@ -216,7 +212,7 @@ while True:
         else:
             #find the maximum flow in either the horizontal or vertical directio`n
             #max_flow = np.max(np.abs(flow))
-            max_flow = 15
+            max_flow = 18
 
             flow = flow/(2.0*max_flow) + 0.5
 
@@ -225,8 +221,11 @@ while True:
 
             average_dx = np.mean(dx).item()
             average_dy = np.mean(dy).item()
+            intensity = np.max(np.abs(flow))
 
             serve_data.to_send["flow_vec"] = [average_dx, average_dy]
+            serve_data.to_send["intensity"] = float(intensity)
+            
 
             #convert to rgb with dx as red and dy as green
             flow_rgb = np.stack((np.ones_like(dx)*0.5, dy, dx), axis=2)
@@ -262,7 +261,6 @@ while True:
 # async def main():
 #     async with websockets.serve(handler, "", 8001):
 #         await asyncio.Future()  # run forever
-
 
 # if __name__ == "__main__":
 #     asyncio.run(main())
